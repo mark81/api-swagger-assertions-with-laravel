@@ -36,7 +36,7 @@
                 "type": "integer",
                 "description": "Unique identifier"
             },
-            "type_id": {
+            "title": {
                 "type": "string",
                 "description": "Episode title type"
             }
