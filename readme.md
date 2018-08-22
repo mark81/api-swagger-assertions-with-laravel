@@ -1,60 +1,208 @@
-<p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
+## Test your Laravel APIs easily with Open API (Swagger) docs
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+This makes it easy to build automated tests for your Laravel based APIs quickly and easily using Open API specification (FKA Swagger).
 
-## About Laravel
+## How it works?
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as:
+It implements simple [InteractsWithSwagger](tests/Concerns/InteractsWithSwagger.php) trait which uses [Maks3w/SwaggerAssertions](https://github.com/Maks3w/SwaggerAssertions) library and performs schema checks against an actual API responses making it very powerful and easy to build functional tests. 
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## How was it implemented
 
-Laravel is accessible, yet powerful, providing tools needed for large, robust applications.
+Step by step implementation process:
+* Initialized laravel app using laravel docker container (bitnami/laravel)
+* [Commit 1](https://github.com/mark81/api-swagger-assertions-with-laravel/commit/daf9a6a5fda49806ba4cb68d20e42d501f4ed656) - Added Maks3w/SwaggerAssertions to dependencies 
 
-## Learning Laravel
+* [Commit 2](https://github.com/mark81/api-swagger-assertions-with-laravel/commit/c1a326c79d56ac4b7ebc8947089235a0bd67b4c7) - OpenAPI definition of example Star Wars Episodes api
+* [Commit 3](https://github.com/mark81/api-swagger-assertions-with-laravel/commit/c2f2ca9bc3752c186c80cf595e8d741b5c1b3425) - Star Wars API test, add this point test fails due to missing endpoint
+* [Commit 4](https://github.com/mark81/api-swagger-assertions-with-laravel/commit/0ce0df3e84fe0e008864caca14b6b5c267a5cf13) - Star Wars API Endpoint which makes the test succeed
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of any modern web application framework, making it a breeze to get started learning the framework.
 
-If you're not in the mood to read, [Laracasts](https://laracasts.com) contains over 1100 video tutorials on a range of topics including Laravel, modern PHP, unit testing, JavaScript, and more. Boost the skill level of yourself and your entire team by digging into our comprehensive video library.
+### Basic API test
 
-## Laravel Sponsors
+Below PHPUnit test will perform an API call to `api/v1/swepisodes` endpoint and test response schema against swagger definition
 
-We would like to extend our thanks to the following sponsors for helping fund on-going Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell):
+```php
+<?php
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
+namespace Tests\Functional;
 
-## Contributing
+use Tests\TestCase;
+use Tests\Concerns\InteractsWithSwagger;
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+class SWApiTest extends TestCase
+{
+    use InteractsWithSwagger;
 
-## Security Vulnerabilities
+    /**
+     * @test
+     */
+    public function list_swepisodes()
+    {
+        $this->assertGetSchemaMatch('api/v1/swepisodes');
+    }
+}
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```
 
-## License
+An Example API response is as follows
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```json
+[
+    {
+        "id": 1,
+        "title": "Episode IV: A New Hope."
+    },
+    {
+        "id": 2,
+        "title": "Episode V: The Empire Strikes Back."
+    },
+    {
+        "id": 3,
+        "title": "Episode VI: Return of the Jedi."
+    },
+    {
+        "id": 4,
+        "title": "Episode I: The Phantom Menace."
+    },
+    {
+        "id": 5,
+        "title": "Episode II: Attack of the Clones."
+    },
+    {
+        "id": 6,
+        "title": "Episode III: Revenge of the Sith."
+    },
+    {
+        "id": 7,
+        "title": "X-Wing."
+    },
+    {
+        "id": 8,
+        "title": "Rebel Assault."
+    }
+]
+```
+
+API definition for the above API using OpenAPI v2.0 schema
+
+```json
+{
+    "SWEpisodes": {
+        "get": {
+            "summary": "Get list of star wars episodes",
+            "description": "Get list of star wars episodes",
+            "responses": {
+                "200": {
+                    "description": "List of episodes",
+                    "schema": {
+                        "$ref": "#/ListOfEpisodes"
+                    }
+                },
+                "400": {
+                    "description": "error",
+                    "schema": {
+                        "$ref": "definitions.json#/Error"
+                    }
+                }
+            }
+        }
+    },
+    "ListOfEpisodes": {
+        "type": "array",
+        "items": {
+            "$ref": "#/Episode"
+        }
+    },    
+    "Episode": {
+        "type": "object",
+        "required": [
+            "id",
+            "title"
+        ],
+        "properties": {
+            "id": {
+                "type": "integer",
+                "description": "Unique identifier"
+            },
+            "title": {
+                "type": "string",
+                "description": "Episode title type"
+            }
+        }
+    }
+}
+```
+
+The above test will pass schema assertion test if both `id` and `title` match swagger type definition.
+
+```
+> vendor/bin/phpunit
+PHPUnit 7.3.2 by Sebastian Bergmann and contributors.
+
+.                                                                   1 / 1 (100%)
+
+Time: 2 seconds, Memory: 12.00MB
+
+OK (1 test, 3 assertions)
+```
+
+### More complex test
+
+This test will assert if 7th (index 6) Star Wars episode is in Fact X-Wing.
+
+```php
+    /**
+     * @test
+     */
+    public function list_swepisodes()
+    {
+        $this->assertGetSchemaMatch('api/v1/swepisodes');
+        $response = $this->getResponseArray();
+        $this->assertArrayHasKey(6, $response);
+        $this->assertArrayHasKey('title', $response[6]);
+        $this->assertEquals($response[6]['title'], "X-Wing.");
+    }
+```
+
+```
+> vendor/bin/phpunit
+PHPUnit 7.3.2 by Sebastian Bergmann and contributors.
+
+.                                                                   1 / 1 (100%)
+
+Time: 1.94 seconds, Memory: 12.00MB
+
+OK (1 test, 6 assertions)
+```
+
+## Example API test
+
+### Prerequisites
+To make use of this, you'll need
+* [Docker Compose](https://docs.docker.com/compose/install/)
+* [An API definition using OpenAPI 2.0](https://swagger.io/docs/specification/2-0/basic-structure/)
+
+### Running a sample test
+
+* Run docker-compose
+
+```
+docker-compose up
+```
+
+* Give it few minutes to download images and init containers
+* Open a browser and access [http://localhost:3000/api/v1/swepisodes](http://localhost:3000/api/v1/swepisodes). This should return list of all SW Episodes
+* Find your laravel docker container id using `docker ps` command
+
+```
+docker ps
+```
+
+* Run `phpunit` from docker container 
+
+```
+docker exec -it [container id] vendor/bin/phpunit
+```
+
+### Thats it
+You're done!
