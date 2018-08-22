@@ -1,0 +1,45 @@
+{
+    "SWEpisodes": {
+        "get": {
+            "summary": "Get list of star wars episodes",
+            "description": "Get list of star wars episodes",
+            "responses": {
+                "200": {
+                    "description": "List of episodes",
+                    "schema": {
+                        "$ref": "#/ListOfEpisodes"
+                    }
+                },
+                "400": {
+                    "description": "error",
+                    "schema": {
+                        "$ref": "definitions.json#/Error"
+                    }
+                }
+            }
+        }
+    },
+    "ListOfEpisodes": {
+        "type": "array",
+        "items": {
+            "$ref": "#/Episode"
+        }
+    },    
+    "Episode": {
+        "type": "object",
+        "required": [
+            "id",
+            "title"
+        ],
+        "properties": {
+            "id": {
+                "type": "integer",
+                "description": "Unique identifier"
+            },
+            "type_id": {
+                "type": "string",
+                "description": "Episode title type"
+            }
+        }
+    }
+}

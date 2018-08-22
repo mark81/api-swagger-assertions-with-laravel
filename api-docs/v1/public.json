@@ -1,0 +1,21 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Swgger Docs",
+        "description": "Swgger Docs",
+        "version": 1
+    },
+    "host": "localhost:3000",
+    "schemes": [
+        "http"
+    ],
+    "basePath": "api/v1",
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/swepisodes": {
+            "$ref": "swapi.json#/SWEpisodes"
+        }
+    }
+}

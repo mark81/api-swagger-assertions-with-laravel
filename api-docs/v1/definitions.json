@@ -1,0 +1,56 @@
+{
+    "Error": {
+        "type": "object",
+        "properties": {
+            "error": {
+                "type": "object",
+                "required": [
+                    "status",
+                    "developerMessage",
+                    "userMessage",
+                    "errorCode",
+                    "info",
+                    "type",
+                    "location"
+                ],
+                "properties": {
+                    "status": {
+                        "type": ["integer","null"],
+                        "description": "status"
+                    },
+                    "developerMessage": {
+                        "type": "string",
+                        "description": "developer message"
+                    },
+                    "userMessage": {
+                        "type": "string",
+                        "description": "user message"
+                    },
+                    "errorCode": {
+                        "type": ["integer","null"],
+                        "description": "error code"
+                    },
+                    "info": {
+                        "type": "string",
+                        "description": "info"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "type"
+                    },
+                    "location": {
+                        "type": "string",
+                        "description": "location"
+                    },
+                    "conflicts": {
+                        "type": "array",
+                        "description": "list of conflicting resources",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
